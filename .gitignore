@@ -1,0 +1,8 @@
+assignment/*
+debug/
+data/
+ocr_web_env/*
+launch.json
+.env
+.vscode
+__pycache__
