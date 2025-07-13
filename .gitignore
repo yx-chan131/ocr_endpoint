@@ -5,4 +5,5 @@ ocr_web_env/*
 launch.json
 .env
 .vscode
+*.pt
 __pycache__
