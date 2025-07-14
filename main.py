@@ -1,6 +1,10 @@
+import warnings
+warnings.filterwarnings("ignore")
+
 import cv2
 import json
 import time
+
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -69,7 +73,13 @@ async def upload_file(file: UploadFile = File(...)):
         cv2.imwrite(save_path, img[..., ::-1])
     
     # Call the OCR process function
-    out_str = OCRModel.predict(img, DEBUG_MODE, imname)
+    out_str, _ = OCRModel.predict(img[..., ::-1], DEBUG_MODE, imname)
+    if not out_str:
+        raise HTTPException(
+            status_code=422, 
+            detail="unsupported_document_type"
+        )
+    
     try:
         agent_out = agent.run(out_str)    
     except:
@@ -89,7 +99,7 @@ async def upload_file(file: UploadFile = File(...)):
     document_type = data.pop("document_type")
 
     if document_type == "referral_letter":
-       signPresence = SignDetect.predict(img[..., ::-1], DEBUG_MODE, imname)
+       signPresence = SignDetect.predict(img[..., ::-1].copy(), DEBUG_MODE, imname)
        data["signature_presence"] = signPresence
 
     t2 = time.time()
