@@ -2,8 +2,10 @@ assignment/*
 debug/
 data/
 ocr_web_env/*
+utils/poppler
 launch.json
 .env
 .vscode
 *.pt
+*.zip
 __pycache__

@@ -99,6 +99,13 @@ async def upload_file(file: UploadFile = File(...)):
             # signPresence = SignDetect.predict(img[..., ::-1], DEBUG_MODE, imname)
             data["signature_presence"] = signPresence
 
+        # check provider_name
+        provider_name = data.get("provider_name")
+        if isinstance(provider_name, str):
+            normalized = provider_name.replace(" ", "").lower()
+            if "fullertonhealth" in normalized:
+                data["provider_name"] = None
+
         t2 = time.time()
 
         result_dict["message"] = "Processing completed."
