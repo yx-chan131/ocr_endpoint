@@ -1,6 +1,6 @@
 assignment/*
 debug/
-data/
+data_more/
 ocr_web_env/*
 utils/poppler
 launch.json
