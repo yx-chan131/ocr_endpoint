@@ -1,2 +1,0 @@
-1. yolov8s-signature-detector: https://huggingface.co/tech4humans/yolov8s-signature-detector
-2. https://github.com/LynnHaDo/Checkbox-Detection/blob/main/app.py
