@@ -3,6 +3,14 @@
 ## Overview
 An AI-powered FastAPI service that processes OCR text from documents and classifies the document type (e.g., medical certificate, referral letter, receipt) and extracts relevant structured fields.
 
+
+- **FastAPI** – Serves the backend API.
+- **pdf2image** – Converts PDF files into images for OCR processing.
+- **PaddleOCR** – Performs optical character recognition on images.
+- **YOLOv8** – Detects signatures in documents.
+- **LangChain + OpenAI** – Builds an AI Agent using OpenAI GPT-4o to extract structured data from OCR results.
+- **Uvicorn** – ASGI server used to run the FastAPI app.
+
 ## Installation & Environment Setup (Windows)
 This application has been tested and verified to run successfully on the following system configuration:
 ```yaml
@@ -86,3 +94,72 @@ curl -X POST "http://127.0.0.1:8000/ocr" -H "accept: application/json" -H "Conte
 curl -X POST "http://127.0.0.1:8000/ocr" -H "accept: application/json" -H "Content-Type: multipart/form-data" -F "file=@data\medical_certificate.pdf"
 
 ```
+
+## How to Extend to New Document Types
+To support a new document type (e.g., insurance form, invoice, prescription), follow the steps below to update the AI agent logic and system prompt accordingly.
+
+#### 1. Update the System Prompt
+Navigate to: `ocr_endpoint/utils/util_llm_agent.py`
+
+Find the prompt string passed into the LLM system (typically a large multiline string). Update the section that describes supported document types. For example:
+
+```python
+"There are only three supported types: referral letter, medical certificate, receipt"
+```
+You should modify this to include your new type, such as:
+```python
+"There are four supported types: referral letter, medical certificate, receipt, insurance form"
+```
+#### 2. Add a New Tool for the Document Type
+Navigate to: `ocr_endpoint/ai_agent.py`
+Define a new `@tool` function with the parameters relevant to the new document type. Here's an example format for a receipt tool (you can model yours similarly):
+```python
+@tool
+def extract_receipt(
+    claimant_name: str = None,
+    claimant_address: str = None,
+    claimant_date_of_birth: str = None,
+    provider_name: str = None,
+    tax_amount: int = None,
+    total_amount: int = None
+) -> dict:
+    """Extract information from a receipt.
+
+    Parameters:
+    - claimant_name: Claimant Name
+    - claimant_address: Address
+    - claimant_date_of_birth: Must be in DD/MM/YYYY format
+    - provider_name: Provider or lab name (must not contain the literal string "Fullerton Health")
+    - tax_amount: Integer with all currency symbols, separators, and decimals removed
+    - total_amount: Same as tax_amount
+    """
+    return {
+        "document_type": "receipt",
+        "claimant_name": claimant_name,
+        "claimant_address": claimant_address,
+        "claimant_date_of_birth": claimant_date_of_birth,
+        "provider_name": provider_name,
+        "tax_amount": tax_amount,
+        "total_amount": total_amount,
+    }
+```
+Create a similar function for your new document type (e.g., `extract_insurance_form`).
+
+#### 3. Register the Tool in the AI Agent
+Navigate to: `ocr_endpoint/ai_agent.py`, locate the function:
+```python
+def create_ai_agent(...)
+```
+Add your new tool to the list of tools passed into the agent. Example:
+```python
+tools = [
+    extract_referral_letter,
+    extract_medical_certificate,
+    extract_receipt,
+    extract_insurance_form,  # ← Add your new tool here
+    unsupported_document_type,
+]
+```
+
+After completing these steps, your system will support the new document type and extract the structured fields as defined.
+✅ Don’t forget to test the system with examples of the new document to ensure the LLM behaves as expected.

@@ -18,14 +18,22 @@ load_dotenv()
 # Use environment variable to set debug mode
 DEBUG_MODE = os.getenv("DEBUG", "0") == "1"
 
-app = FastAPI()
+t1 = time.time()
+print("Modules loading...")
 OCRModel = OCR()
 SignDetect = SignatureDetection()
 agent = create_ai_agent(os.getenv("OPENAI_API_KEY"), verbose=DEBUG_MODE)
+t2 = time.time()
+print(f"Modules loading done! ({round(t2-t1,2)}s)")
+
+if DEBUG_MODE:
+    os.makedirs(".\\debug", exist_ok=True)
+
+app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "FastAPI for medical documentation"}
+    return {"message": "FastAPI for medical documentation extraction"}
 
 @app.exception_handler(HTTPException)
 async def custom_http_exception_handler(request: Request, exc: HTTPException):
@@ -96,7 +104,6 @@ async def upload_file(file: UploadFile = File(...)):
 
         if document_type == "referral_letter":
             signPresence = SignDetect.predict(img[..., ::-1].copy(), DEBUG_MODE, imname)
-            # signPresence = SignDetect.predict(img[..., ::-1], DEBUG_MODE, imname)
             data["signature_presence"] = signPresence
 
         # check provider_name
@@ -118,8 +125,11 @@ async def upload_file(file: UploadFile = File(...)):
         content = json.dumps(result_dict, indent=2)    
         return JSONResponse(content=json.loads(content))
     
-    except:
-            raise HTTPException(
-                status_code=500, 
-                detail="internal_server_error"
-            )
+    except HTTPException as e:
+        raise e  # re-raise custom errors
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail="internal_server_error"
+        )
