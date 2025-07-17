@@ -57,8 +57,11 @@ Install other dependencies:
 ```bash
 pip install -r requirements.txt
 ```
+#### ✅ Step 5: File configuration
+- Download the YOLOv8 model weigths file `yolov8s.pt` from [link](https://huggingface.co/tech4humans/yolov8s-signature-detector). Put the file in the following directory: `./ocr_endpoint/utils/models/yolov8s.pt`.
+- Download Poppler from [here](https://github.com/oschwartz10612/poppler-windows/releases/). Unzip the Poppler folder and place the entire folder (e.g., poppler-24.08.0) in the following directory: `/ocr_endpoint/utils/poppler/poppler-24.08.0`
 
-#### ✅ Step 5: Environment Configuration
+#### ✅ Step 6: Environment Configuration
 Before running the app, you need to create a `.env` file in the project root directory to store environment variables.
 Create a file named `.env` (no filename prefix) and add the following content:
 ```env
