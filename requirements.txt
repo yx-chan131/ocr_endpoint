@@ -13,6 +13,8 @@ pillow==11.2.1
 pdf2image==1.17.0
 imageio==2.37.0
 scikit-image==0.25.2
+supervision==0.25.1
+ultralytics==8.3.165
 
 # Parsing, NLP, and LLM-related
 langchain==0.3.26
