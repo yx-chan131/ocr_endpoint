@@ -59,7 +59,7 @@ async def upload_file(file: UploadFile = File(...)):
     # if not is_valid_file(file.filename):
         raise HTTPException(
             status_code=400,
-            detail=f"file_missing"
+            detail=f"unsupported_file_type"
         )        
 
     imname = os.path.splitext(file.filename)[0]
