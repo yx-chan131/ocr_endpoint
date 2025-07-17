@@ -31,7 +31,7 @@ If not installed, download Python 3.10 from the official site: https://www.pytho
 #### ✅ Step 2: Create a Virtual Environment
 Use python3.10 to create a virtual environment named `venv` under the project directory:
 ```bash
-cd path/to/your/code/directory
+cd path/to/ocr_endpoint
 py -3.10 -m venv venv
 ```
 
@@ -79,7 +79,7 @@ OPENAI_API_KEY="your openai api key"
 #### Run the FastAPI app
 Make sure your virtual environment is activated, then start the API using `uvicorn`
 ```bash
-cd path/to/your/code/directory
+cd path/to/ocr_endpoint
 # option 1: Production Mode
 uvicorn main:app
 # option 2: Development Mode
